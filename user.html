@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+	<head>
+  	<title>La Forchetta</title>
+  	<!-- META -->
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<!-- META -->
+  	<!-- CSS -->
+  	<link href="css/bootstrap.css" rel="stylesheet" media="screen">
+  	<!-- Optional Bootstrap theme -->
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+  	<!-- CSS -->  
+	</head>
+	<body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href='user.html'>LA FORCHETTA</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="profile.html">Profilo</a></li>
+          <li><a href="prenotazioni_user.html">Prenotazioni</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="glyphicon glyphicon-off"></i>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="nav-item">
+                <a class="nav-link" onclick="logout()" href="#">Esci</a>
+                <a class="nav-link" onclick="deleteAccount()" href="#">Elimina account</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    
+    <!-- Header -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <!-- SearchBox -->
+          <div class="col-md-2">
+            <div class='form-group'>
+              <label for="nome"></label>
+              <input type="text" class="form-control"  id="nome" autocomplete=off placeholder="Nome...">
+              <label for="tipologia"></label>
+              <input type="text" class="form-control" id="tipologia" autocomplete=off placeholder="Tipologia">
+              <label for="citta"></label>
+              <input type="text" class="form-control" id="citta" autocomplete=off placeholder="Città">
+              <label for="posti"></label>
+              <input type="number" class="form-control" id="posti" autocomplete=off placeholder="Posti...">
+              <div class="form-group">
+                <label for="prezzo"></label>
+                <select class="form-control" id="prezzo">
+                  <option value="empty" hidden selected>Fascia prezzo</option>
+                  <option value="economico">Economico</option>
+                  <option value="medio">Medio</option>
+                  <option value="costoso">Costoso</option>
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary" onclick="search()">
+                <i class="glyphicon glyphicon-search"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Panel Group -->
+
+          <div class="col-md-10">
+            <div class="panel-group" id="Ristoranti">
+            </div>
+          </div>
+        </div>
+        <div class="col-md-10 col-md-offset-2" id="aggiungi">
+          <div class="row">
+            <center>
+              <button  type="button" class="btn btn-link" type="button" onclick="add()">
+                <i class="glyphicon glyphicon-plus"></i>
+              </button>
+            </center>
+          </div>
+        </div>
+      </div>
+    </div>
+
+     <!-- Success Modal -->
+    <div id="Modal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+
+            <select id="language" class="form-control bfh-languages" onchange="createModalLanguage(this.value)">
+              <option value="ita" selected>ITA</option>
+              <option value="eng">ENG</option>
+            </select>
+            <table class="table" id="table">
+            </table>
+        </div>
+      </div>
+    </div>
+
+   <!-- Footer -->
+    <footer>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="footer-col col-md-12">
+              <center>
+                <p>3481 Piazza Roma<br>Monza, MB +398790210</p>
+              </center>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/fork.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/reservation.js"></script>
+    <script type="text/javascript">
+      
+      checklog();
+      localStorage.setItem("Iterazioni","1");
+
+      if (localStorage.getItem("Ristoranti") === null){
+        console.log("Carico Ristoranti");
+        localStorage.setItem("Ristoranti",JSON.stringify(Ristoranti));
+      }
+      if (localStorage.getItem("Utenti") === null){
+        console.log("Carico Utenti");
+        localStorage.setItem("Utenti",JSON.stringify(Utenti));
+      }
+      if (localStorage.getItem("Prenotazioni") === null){
+        console.log("Carico Prenotazioni");
+        localStorage.setItem("Prenotazioni",JSON.stringify(Prenotazioni));
+      }
+
+      for (var i = 1; i <4 ; i++) {
+          add();
+      }
+
+      function search() {
+        console.log("Cerco");
+        Ristoranti = JSON.parse(localStorage.getItem("Ristoranti"));
+        //All'inizio pulisco la lista dei ristoranti
+        for (var key in Ristoranti){
+          if (document.getElementById('panel-default') != null){
+            var list = document.getElementById('panel-default');
+            list.parentNode.removeChild(list);
+          }
+        }
+
+        if (document.getElementById('aggiungi') != null){
+          var più = document.getElementById('aggiungi');
+          più.parentNode.removeChild(più);
+        }
+
+        //Memorizzo il numero di parametri cercati
+        var par = 0; 
+        if (document.getElementById("nome").value != ""){
+          var Nome = document.getElementById("nome").value; 
+          par = par+1;
+        } 
+        if (document.getElementById("tipologia").value != ""){
+          var Tipologia = document.getElementById("tipologia").value;
+          par = par+1;
+        }
+        if (document.getElementById("citta").value != ""){
+          var Città = document.getElementById("citta").value;
+          par = par+1;
+        } 
+        if (document.getElementById("posti").value != ""){
+          var Posti = document.getElementById("posti").value;
+          par = par+1;
+        } 
+        if (document.getElementById("prezzo").value != "empty"){
+          var Prezzo = document.getElementById("prezzo").value;
+          par = par+1;
+        }
+
+        //Memorizzo il numero di parametri trovati
+        for (var key in Ristoranti){
+          var check=0;
+          console.log(key);
+          if (Nome == Ristoranti[key].nome){
+            console.log(Ristoranti[key].nome);
+            check=check+1;
+          }
+          for (var tip in Ristoranti[key].tipologia){
+            if (Tipologia == Ristoranti[key].tipologia[tip]){
+              console.log(Ristoranti[key].tipologia[tip]);
+              check=check+1;
+            }
+          }
+          if (Città == Ristoranti[key].citta){
+            console.log(Città);
+            check=check+1;
+          }
+          if (Posti <= Ristoranti[key].posti){
+            console.log(Ristoranti[key].posti);
+            check=check+1;
+          }
+          if (Prezzo == Ristoranti[key].fascia_prezzo){
+            console.log(Ristoranti[key].fascia_prezzo);
+            check=check+1;
+          }
+          console.log(check);
+
+          //Se corrispondono aggiungo
+          if (par==check){
+            console.log("Trovato"+Ristoranti[key].nome);
+            addRestaurant(key);
+          }
+        }
+      }
+
+      function logout() {
+        localStorage.setItem('UserLogged', 'No');
+        localStorage.removeItem("UserActive");
+        window.location = "index.html";
+      }
+      function checklog() {
+        if (localStorage.getItem("UserLogged")== null) {
+          window.location = "index.html";
+        }
+      }
+      function addRestaurant(e) {
+        console.log("leggo ristoranti dal localstorage");
+        Ristoranti = JSON.parse(localStorage.getItem("Ristoranti"));
+        var id= e ;
+        console.log(id);
+        elem=document.getElementById("Ristoranti");
+        newPanel=document.createElement('div');
+        newPanel.className="panel panel-default panel-horizontal";
+        newPanel.setAttribute("id","panel-default");
+
+        newPanelHeading=document.createElement('div');
+        newPanelHeading.className="panel-heading";
+        newPanelHeading.setAttribute("id","panel-heading");
+        newPanelHeading.innerHTML= "<img src='img/ristorante"+id+".jpg' class='img-responsive'>";
+
+        newPanelBody=document.createElement('div');
+        newPanelBody.className="panel-body";
+
+        newCol=document.createElement('div');
+        newCol.className="col-md-12";
+
+        newRow=document.createElement('div');
+        newRow.className="row";
+        newRow.innerHTML="<h2>"+Ristoranti[id].nome+"</h2>";
+
+        newCol2=document.createElement('div');
+        newCol2.className="col-md-10";
+
+        newRow1=document.createElement('div');
+        newRow1.className="row";
+        newRow1.innerHTML="<h5>Indirizzo: "+Ristoranti[id].citta+", "+Ristoranti[id].via+"</h5>";
+
+        newRow2=document.createElement('div');
+        newRow2.className="row";
+        newRow2.innerHTML="<h5>Valutazione media: "+Ristoranti[id].review+"</h5>";
+
+        newCol3=document.createElement('div');
+        newCol3.className="col-md-1";
+
+        newRow3=document.createElement('div');
+        newRow3.className="row";
+
+        newButton=document.createElement('button');
+        newButton.className="btn btn-primary btn-lg";
+        newButton.setAttribute("style","width: 100px;");
+        newButton.setAttribute("data-id",id);
+        newButton.setAttribute("onclick","Redirect(this)");
+        newButton.innerHTML="Prenota";
+
+        newRow4=document.createElement('div');
+        newRow4.className="row";
+        newRow4.setAttribute("style","margin-top: 10px;")
+
+        newButton2=document.createElement('button');
+        newButton2.className="btn btn-primary btn-lg";
+        newButton2.setAttribute("style","width: 100px;");
+        newButton2.setAttribute("data-id",id);
+        newButton2.setAttribute("onclick","createModal(this)");
+        newButton2.innerHTML="Menù";
+
+        elem.appendChild(newPanel);
+        newPanel.appendChild(newPanelHeading);
+        newPanel.appendChild(newPanelBody);
+        newPanelBody.appendChild(newCol);
+        newCol.appendChild(newRow);
+        newPanelBody.appendChild(newCol2);
+        newCol2.appendChild(newRow1);
+        newCol2.appendChild(newRow2);
+
+        newPanelBody.appendChild(newCol3);
+        newCol3.appendChild(newRow3);
+        newRow3.appendChild(newButton);
+        newCol3.appendChild(newRow4);
+        newRow4.appendChild(newButton2);
+      }
+      function add() {
+        var result=JSON.parse(localStorage.getItem("Ristoranti"));
+        var id=(localStorage.getItem("Iterazioni")/1);
+        if (id == (Ristoranti.length)){
+          id = 0;
+          localStorage.setItem("Iterazioni",id+1);
+        }else{
+          localStorage.setItem("Iterazioni",id+1);
+        }
+        elem=document.getElementById("Ristoranti");
+        newPanel=document.createElement('div');
+        newPanel.className="panel panel-default panel-horizontal";
+        newPanel.setAttribute("id","panel-default");
+
+        newPanelHeading=document.createElement('div');
+        newPanelHeading.className="panel-heading";
+        newPanelHeading.setAttribute("id","panel-heading");
+        newPanelHeading.innerHTML= "<img src='img/ristorante"+id+".jpg' class='img-responsive'>";
+
+        newPanelBody=document.createElement('div');
+        newPanelBody.className="panel-body";
+
+        newCol=document.createElement('div');
+        newCol.className="col-md-12";
+
+        newRow=document.createElement('div');
+        newRow.className="row";
+        newRow.innerHTML="<h2>"+Ristoranti[id].nome+"</h2>";
+
+        newCol2=document.createElement('div');
+        newCol2.className="col-md-10";
+
+        newRow1=document.createElement('div');
+        newRow1.className="row";
+        newRow1.innerHTML="<h5>Indirizzo: "+Ristoranti[id].citta+", "+Ristoranti[id].via+"</h5>";
+
+        newRow2=document.createElement('div');
+        newRow2.className="row";
+        newRow2.innerHTML="<h5>Valutazione media: "+Ristoranti[id].review+"</h5>";
+
+        newCol3=document.createElement('div');
+        newCol3.className="col-md-1";
+
+        newRow3=document.createElement('div');
+        newRow3.className="row";
+
+        newButton=document.createElement('button');
+        newButton.className="btn btn-primary btn-lg";
+        newButton.setAttribute("style","width: 100px;");
+        newButton.setAttribute("data-id",id);
+        newButton.setAttribute("onclick","Redirect(this)");
+        newButton.innerHTML="Prenota";
+
+        newRow4=document.createElement('div');
+        newRow4.className="row";
+        newRow4.setAttribute("style","margin-top: 10px;")
+
+        newButton2=document.createElement('button');
+        newButton2.className="btn btn-primary btn-lg";
+        newButton2.setAttribute("style","width: 100px;");
+        newButton2.setAttribute("data-id",id);
+        newButton2.setAttribute("onclick","createModal(this)");
+        newButton2.innerHTML="Menù";
+
+        elem.appendChild(newPanel);
+        newPanel.appendChild(newPanelHeading);
+        newPanel.appendChild(newPanelBody);
+        newPanelBody.appendChild(newCol);
+        newCol.appendChild(newRow);
+        newPanelBody.appendChild(newCol2);
+        newCol2.appendChild(newRow1);
+        newCol2.appendChild(newRow2);
+
+        newPanelBody.appendChild(newCol3);
+        newCol3.appendChild(newRow3);
+        newRow3.appendChild(newButton);
+        newCol3.appendChild(newRow4);
+        newRow4.appendChild(newButton2);
+      }
+
+      function createModal(e){
+        var table = document.getElementById("table");
+        var tBody = document.createElement ("tbody");
+        table.appendChild(tBody);
+        var i = e.getAttribute('data-id');
+        table.setAttribute("data-id",i);
+        table.className="table table-striped";
+        console.log("creo2");
+        for (var j=0 ; j < Ristoranti[i].menus[0].length ; j++){
+          for (var key in Ristoranti[i].menus[0][j]) {
+            if ( key != "prezzo" && key != "sconti"){
+              var row = tBody.insertRow(-1);
+              var cell1 = row.insertCell(0);
+              var cell2 = row.insertCell(1);
+              cell1.innerHTML = key.toUpperCase();
+              cell2.innerHTML = Ristoranti[i].menus[0][j][key].toString();
+              console.log(key);
+              console.log(Ristoranti[i].menus[0][j][key].toString());
+            }
+          }
+          var spacerow= table.insertRow(-1);
+          var cell1 = spacerow.insertCell(0);
+          var cell2 = spacerow.insertCell(1);
+        }
+        $('#Modal').modal('show');
+        return;
+      }
+
+      function createModalLanguage(value){
+        var table = document.getElementById("table");
+        var i = table.getAttribute("data-id");
+        console.log(i);
+        while(table.rows.length > 0) {
+          table.deleteRow(0);
+        }
+        if (value == "eng"){
+          var k = 1;
+        }else{
+          var k = 0;
+        }
+        for (var j=0 ; j < Ristoranti[i].menus[k].length ; j++){
+          for (var key in Ristoranti[i].menus[k][j]) {
+            if ( key != "prezzo" && key != "sconti"){
+              var row = table.insertRow(-1);
+              var cell1 = row.insertCell(0);
+              var cell2 = row.insertCell(1);
+              cell1.innerHTML = key.toUpperCase();
+              cell2.innerHTML = Ristoranti[i].menus[k][j][key].toString();
+              console.log(key);
+              console.log(Ristoranti[i].menus[k][j][key].toString());
+            }
+          }
+          var spacerow= table.insertRow(-1);
+          var cell1 = spacerow.insertCell(0);
+          var cell2 = spacerow.insertCell(1);
+        }
+        $('#Modal').modal('show');
+        return;
+      }
+
+      function Redirect(e){
+        var id = e.getAttribute('data-id');
+        localStorage.setItem("Iterazioni",id);
+        location.href = 'booking.html';
+      }
+
+      function deleteAccount(){
+        Utente = localStorage.getItem("UserActive");
+        Utenti = JSON.parse(localStorage.getItem("Utenti"));
+        console.log(Utenti);
+        for (var key in Utenti){
+          if (Utente == Utenti[key].email){
+            Utenti.splice(key,1);
+          }
+        }
+        localStorage.setItem('Utenti', JSON.stringify(Utenti));
+        logout();
+      }
+
+    </script>
+    <!-- JS -->
+  </body>
+</html>

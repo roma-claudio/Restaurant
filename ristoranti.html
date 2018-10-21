@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+	<head>
+  	<title>La Forchetta</title>
+  	<!-- META -->
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<!-- META -->
+  	<!-- CSS -->
+  	<link href="css/bootstrap.css" rel="stylesheet" media="screen">
+  	<!-- Optional Bootstrap theme -->
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+  	<!-- CSS -->  
+	</head>
+	<body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href='ristoranti.html'>LA FORCHETTA</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="users.html">Utenti</a></li>
+          <li><a href="prenotazioni.html">Prenotazioni</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="nav-item">
+            <a class="nav-link" onclick="logout()" href="#">Esci</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    
+
+    <!-- Header -->
+    <div class='container-fluid'>
+      <div class='row' style="height:20%; display: block;">
+        <div class='col-md-12'>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <table class="table table-striped" id="table">
+                <thead class="thead-inverse">
+                  <tr>
+                    <th>Nome</th>
+                    <th>Città</th>
+                    <th>Posti</th>
+                    <th>Orario</th>
+                    <th>Lunedì</th>
+                    <th>Martedì</th>
+                    <th>Mercoledì</th>
+                    <th>Giovedì</th>
+                    <th>Venerdì</th>
+                    <th>Sabato</th>
+                    <th>Domenica</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="footer-col col-md-12">
+              <center>
+                <p>3481 Piazza Roma<br>Monza, MB +398790210</p>
+              </center>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/fork.js"></script>
+    <script src="js/user.js"></script>
+    <script type="text/javascript">
+      if (localStorage.getItem("Ristoranti" == null)){
+        console.log("Carico Ristoranti")
+        localStorage.setItem("Ristoranti",JSON.stringify(Ristoranti));
+      }
+      if (localStorage.getItem("Utenti") === null){
+        console.log("Carico Utenti")
+        localStorage.setItem("Utenti",JSON.stringify(Utenti));
+      }
+      checklog();
+      createTable();
+      function logout() {
+        localStorage.setItem('AdminLogged', 'No');
+        window.location = "index.html";
+      }
+      function checklog() {
+        if (localStorage.getItem("AdminLogged")=="No") {
+          window.location = "index.html";
+        }
+      }
+
+      function createTable(){
+        Ristoranti = JSON.parse(localStorage.getItem("Ristoranti"));
+        var table = document.getElementById("table");
+        var tBody = document.createElement ("tbody");
+        table.appendChild(tBody);
+        for (var key in Ristoranti) {
+            var row1 = tBody.insertRow(-1);
+            cell0 = row1.insertCell(0);
+            cell1 = row1.insertCell(1);
+            cell2 = row1.insertCell(2);
+            cell3 = row1.insertCell(3);
+            cell4 = row1.insertCell(4);
+            cell5 = row1.insertCell(5);
+            cell6 = row1.insertCell(6);
+            cell7 = row1.insertCell(7);
+            cell8 = row1.insertCell(8);
+            cell9 = row1.insertCell(9);
+            cell10 = row1.insertCell(10);
+            cell0.innerHTML = Ristoranti[key].nome;
+            cell1.innerHTML = Ristoranti[key].citta;
+            cell2.innerHTML = Ristoranti[key].posti;
+            cell3.innerHTML = "19-21";
+            var j = 3;
+            for (var i = 0; i < Ristoranti[key].prenotazioni.length; i=i+2) {
+                j++;
+                var cell = "text";
+                if (Ristoranti[key].prenotazioni[i].postiliberi == 0) {
+                  window['cell' + j].innerHTML = "Occupato";
+                }else{
+                  window['cell' + j].innerHTML = "Disponibile";
+                }
+            }
+            var row2 = tBody.insertRow(-1);
+            cell0 = row2.insertCell(0);
+            cell1 = row2.insertCell(1);
+            cell2 = row2.insertCell(2);
+            cell3 = row2.insertCell(3);
+            cell4 = row2.insertCell(4);
+            cell5 = row2.insertCell(5);
+            cell6 = row2.insertCell(6);
+            cell7 = row2.insertCell(7);
+            cell8 = row2.insertCell(8);
+            cell9 = row2.insertCell(9);
+            cell10 = row2.insertCell(10);
+            cell3.innerHTML = "21-23";
+            var j = 3;
+            for (var i = 1; i < Ristoranti[key].prenotazioni.length; i=i+2) {
+                j++;
+                var cell = "text";
+                if (Ristoranti[key].prenotazioni[i].postiliberi == 0) {
+                  window['cell' + j].innerHTML = "Occupato";
+                }else{
+                  window['cell' + j].innerHTML = "Disponibile";
+                }
+            }
+        }
+      }
+
+    </script>
+    <!-- JS -->
+  </body>
+</html>

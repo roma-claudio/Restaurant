@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+	<head>
+  	<title>La Forchetta</title>
+  	<!-- META -->
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<!-- META -->
+  	<!-- CSS -->
+  	<link href="css/bootstrap.css" rel="stylesheet" media="screen">
+  	<!-- Optional Bootstrap theme -->
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+  	<!-- CSS -->  
+	</head>
+	 <body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" style="margin-left:-15px !important;" href='user.html'>LA FORCHETTA</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="profile.html">Profilo</a></li>
+          <li><a href="prenotazioni_user.html">Prenotazioni</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a class="dropdown-toggle" style="margin-right:-15px !important;" data-toggle="dropdown" href="#">
+              <i class="glyphicon glyphicon-off"></i>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="nav-item">
+                <a class="nav-link" onclick="logout()" href="#">Esci</a>
+                <a class="nav-link" onclick="deleteAccount()" href="#">Elimina account</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    
+
+    <!-- Header -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <form action="success.html">
+            <div class="panel panel-default">
+              <div class="panel-heading" id="panel-heading"></div>
+              <div class="panel-body">
+                  <div class="modal-body">
+                    <div class='form-group'>
+                      <label for="posti">Posti</label>
+                      <input type="number" id="posti" name="Posti" class='form-control' min='1' max='35' onchange="setDay()" required>
+                    </div>
+                    <div class='form-group'>
+                      <label for='giorno'>Giorno</label>
+                      <select class="form-control" id="giorno" required onchange="setTime()">
+                         <option>Lunedi</option>
+                         <option>Martedi</option>
+                         <option>Mercoledi</option>
+                         <option>Giovedi</option>
+                         <option>Venerdi</option>
+                         <option>Sabato</option>
+                         <option>Domenica</option>
+                      </select>
+                    </div>
+                    <div class='form-group'>
+                      <label for='ora'>Orario</label>
+                      <select class="form-control" id="ora" required>
+                         <option>19-21</option>
+                         <option>21-23</option>
+                      </select>
+                    </div>
+                    <div class='form-group'>
+                      <label for='menù'>Menù</label>
+                      <select class="form-control" id="menù" onclick="printTable(this)" required>
+                      </select>
+                    </div>
+                    <div class='form-group'>
+                      <table class="table table-striped" id="tablemenù"></table>
+                    </div>
+                    <div class='form-group'>
+                        <label for="prezzo">Prezzo</label>
+                        <input type="number" id="prezzo" name="prezzo" class='form-control' readonly>
+                    </div>
+                  </div>
+                  <center>
+                    <div class="btn-group" role="group">
+                      <input type="submit" value="Prenota" id="Prenota" class="btn btn-success" onclick="book()">
+                    </div>
+                  </center>
+              </div>
+            </div>
+          </form> 
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="SuccessModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="alert alert-success">
+          <div class="modal-content">
+            <div class="modal-body">
+              <div class='form-group'>
+                <h3>Registrazione effettuata con successo!</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="footer-col col-md-12">
+              <center>
+                <p>3481 Piazza Roma<br>Monza, MB +398790210</p>
+              </center>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/fork.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/reservation.js"></script>
+    <script type="text/javascript">
+      
+      checklog();
+      createMenùOption();
+      setForm();
+      if (localStorage.getItem("Ristoranti") === null){
+        console.log("Carico Ristoranti");
+        localStorage.setItem("Ristoranti",JSON.stringify(Ristoranti));
+      }
+      if (localStorage.getItem("Utenti") === null){
+        console.log("Carico Utenti");
+        localStorage.setItem("Utenti",JSON.stringify(Utenti));
+      }
+      if (localStorage.getItem("Prenotazioni") === null){
+        console.log("Carico Prenotazioni");
+        localStorage.setItem("Prenotazioni",JSON.stringify(Prenotazioni));
+      }
+
+      function logout() {
+        localStorage.setItem('UserLogged', 'No');
+        window.location = "index.html";
+      }
+
+      function checklog() {
+        if (localStorage.getItem("UserLogged")=="No") {
+          window.location = "index.html";
+        }
+      }
+
+      function setForm(){
+        Ristoranti = JSON.parse(localStorage.getItem("Ristoranti"));
+        var i = localStorage.getItem("Iterazioni");
+        document.getElementById("panel-heading").innerHTML= Ristoranti[i].nome;
+        document.getElementById("giorno").selectedIndex = "-1";
+        document.getElementById("ora").selectedIndex = "-1";
+        document.getElementById("menù").selectedIndex = "-1";
+      }
+
+      function createMenùOption(){
+        Ristoranti = JSON.parse(localStorage.getItem("Ristoranti"));
+        var i = localStorage.getItem("Iterazioni");
+        Select =document.getElementById("menù");
+        for (var j = 0; j < (Ristoranti[i].menus[0].length); j++) {
+          newOption = document.createElement('option');
+          newOption.setAttribute("value",j);
+          newOption.innerHTML=Ristoranti[i].menus[0][j].menu;
+          Select.appendChild(newOption);
+        }
+      }
+
+      function price(){
+        Ristoranti = JSON.parse(localStorage.getItem("Ristoranti")); 
+        var i = localStorage.getItem("Iterazioni");
+        var k = document.getElementById("menù").value;
+        var giorno = document.getElementById("giorno").value;
+        var ora = document.getElementById("ora").value;
+        var posti = document.getElementById("posti").value;
+        console.log(giorno);
+        var prezzo = Ristoranti[i].menus[0][k].prezzo;
+        console.log(prezzo);
+        for (var key in Ristoranti[i].menus[0][k].sconti){
+          if(Ristoranti[i].menus[0][k].sconti[key].tipo == "giorno"){
+            for (var j=0 ; j < Ristoranti[i].menus[0][k].sconti[key].valore.length; j++){
+              console.log(Ristoranti[i].menus[0][k].sconti[key].valore[j]);
+              console.log(giorno);
+              console.log(giorno == Ristoranti[i].menus[0][k].sconti[key].valore[j]);
+              if (giorno == Ristoranti[i].menus[0][k].sconti[key].valore[j]){
+                prezzo = prezzo - Ristoranti[i].menus[0][k].sconti[key].sconto;
+                console.log(prezzo);
+              }
+            }
+          }
+          if(Ristoranti[i].menus[0][k].sconti[key].tipo == "orario"){
+            for (var j=0 ; j < Ristoranti[i].menus[0][k].sconti[key].valore.length; j++){
+              if (ora == Ristoranti[i].menus[0][k].sconti[key].valore[j]){
+                prezzo = prezzo - Ristoranti[i].menus[0][k].sconti[key].sconto;
+              }
+            }
+          }
+        }
+        console.log(posti);
+        prezzo = prezzo * posti;
+        document.getElementById("prezzo").value = prezzo;
+      }
+
+      function printTable(e){
+        Ristoranti = JSON.parse(localStorage.getItem("Ristoranti"));
+        var i = localStorage.getItem("Iterazioni");
+        var k = e.options[e.selectedIndex].value;
+        var table = document.getElementById("tablemenù");
+        while(table.rows.length > 0) {
+          table.deleteRow(0);
+        }
+        for (var key in Ristoranti[i].menus[0][k]) {
+          if (key != "menu" && key != "prezzo" && key != "sconti"){
+            var row = table.insertRow(-1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML = key.toUpperCase();
+            cell2.innerHTML = Ristoranti[i].menus[0][k][key].toString();
+            console.log(key);
+            console.log(Ristoranti[i].menus[0][k][key].toString());
+          }
+        }
+        price();
+      }
+
+      function book(){
+        Prenotazioni = JSON.parse(localStorage.getItem("Prenotazioni"));
+        Ristoranti = JSON.parse(localStorage.getItem("Ristoranti"));
+        var i = localStorage.getItem("Iterazioni");
+        var Menu = document.getElementById('menù').value;
+        var Giorno = document.getElementById('giorno').value;
+        var Nomeristorante = Ristoranti[i].nome;
+        var Ora = document.getElementById("ora").value;
+        var User = localStorage.getItem("UserActive");
+        var Posti = document.getElementById('posti').value;
+        var Prenotazione = {nomeristorante: Nomeristorante ,ora: Ora,giorno: Giorno,utente: User,posti: Posti, menu: Menu };
+
+        console.log(Ristoranti);
+        console.log(Prenotazione);
+        console.log(Giorno);
+        for (var j=0; j<Ristoranti[i].prenotazioni.length; j++){
+          if (Ristoranti[i].prenotazioni[j].valore === Giorno && Ristoranti[i].prenotazioni[j].ora === Ora ){
+            console.log(Ristoranti[i].prenotazioni[j]);
+            Ristoranti[i].prenotazioni[j].postiliberi = Ristoranti[i].prenotazioni[j].postiliberi - document.getElementById('posti').value;
+            console.log(Ristoranti[i].prenotazioni[j]);
+            localStorage.setItem('Ristoranti', JSON.stringify(Ristoranti));
+
+            console.log(Prenotazioni);
+            console.log(Prenotazione);
+            Prenotazioni.push(Prenotazione);
+            console.log(Prenotazioni);
+
+            localStorage.setItem('Prenotazioni',JSON.stringify(Prenotazioni));
+            return;
+          }
+        }
+      }
+
+      function setDay(){
+        Ristoranti = JSON.parse(localStorage.getItem("Ristoranti"));
+        var o = 0;
+        var i = localStorage.getItem("Iterazioni");
+        var posti = document.getElementById("posti").value;
+        var op = document.getElementById("giorno").getElementsByTagName("option");
+        var op2 = document.getElementById("ora").getElementsByTagName("option");
+        for (var v = 0; v < 6; v++) {
+          op[v].disabled=false;
+        }
+        document.getElementById("giorno").selectedIndex = "-1";
+        document.getElementById("ora").selectedIndex = "-1";
+        console.log(Ristoranti[i].prenotazioni.length);
+        
+        for (var j = 1; j<(Ristoranti[i].prenotazioni.length); j=j+2) {
+            console.log(posti);
+            console.log(Ristoranti[i].prenotazioni[j].postiliberi);
+            console.log((posti/1) > (Ristoranti[i].prenotazioni[j].postiliberi/1));
+            if ((posti/1) > (Ristoranti[i].prenotazioni[j].postiliberi/1) && (posti/1) > (Ristoranti[i].prenotazioni[j-1].postiliberi/1)){
+                op[o].disabled= true;
+                console.log("If vero");
+            }
+            o++;
+        }
+      }
+
+      function setTime(){
+        console.log("setTime");
+        document.getElementById("ora").selectedIndex = "-1";
+        Ristoranti = JSON.parse(localStorage.getItem("Ristoranti"));
+        document.getElementById("posti").readonly = true;
+        var posti = (document.getElementById("posti").value)/1;
+        var giorno = document.getElementById("giorno");
+        var opGiorno = giorno.options[giorno.selectedIndex].value;
+        var opOra = document.getElementById("ora").getElementsByTagName("option");
+        opOra[0].disabled=false;
+        opOra[1].disabled=false;
+        var i = localStorage.getItem("Iterazioni");
+        
+        for (var j = 0; j<(Ristoranti[i].prenotazioni.length)-1; j++){
+          console.log(giorno == Ristoranti[i].prenotazioni[j].valore);
+          if ( opGiorno == (Ristoranti[i].prenotazioni[j].valore)){
+            console.log(Ristoranti[i].prenotazioni[j].ora);
+            if (posti > (Ristoranti[i].prenotazioni[j].postiliberi)/1){
+              if (j%2 == 0){
+                opOra[0].disabled=true;
+                console.log("Entro nell'if di setTime 1");
+              }else{ 
+                opOra[1].disabled=true;
+                console.log("Entro nell'if di setTime 0");
+              }
+
+            }
+          }
+        }
+      }
+
+      function setPosti(sel) {
+        Ristoranti = JSON.parse(localStorage.getItem("Ristoranti"));
+        var posti = document.getElementById("posti").value;
+        var i = localStorage.getItem("Iterazioni");
+        var j = sel.options[sel.selectedIndex].text;
+        for (var k = 0; (Ristoranti[i].prenotazioni[0].disponibilità.length)-1; k++) {
+        }
+
+        setTime();
+      }
+
+      function deleteAccount(){
+        Utente = localStorage.getItem("UserActive");
+        Utenti = JSON.parse(localStorage.getItem("Utenti"));
+        console.log(Utenti);
+        for (var key in Utenti){
+          if (Utente == Utenti[key].email){
+            Utenti.splice(key,1);
+          }
+        }
+        localStorage.setItem('Utenti', JSON.stringify(Utenti));
+        logout();
+      }
+
+      </script>
+    <!-- JS -->
+  </body>
+</html>

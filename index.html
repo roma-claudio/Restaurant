@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+	<head>
+  	<title>La Forchetta</title>
+  	<!-- META -->
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<!-- META -->
+  	<!-- CSS -->
+  	<link href="css/bootstrap.css" rel="stylesheet" media="screen">
+  	<!-- Optional Bootstrap theme -->
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+  	<!-- CSS -->  
+	</head>
+	<body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" style="margin-left:-15px !important;" href='index.html'>LA FORCHETTA</a>
+        </div>
+        <ul class="nav navbar-nav">
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="nav-item">
+            <a class="nav-link" style="margin-right:-15px !important;" data-toggle="modal" data-target="#LogInModal" href="#">Accedi</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- List -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel-group" id="Ristoranti">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12" id="aggiungi">
+        <div class="row">
+          <center>
+            <button  type="button" class="btn btn-link" type="button" onclick="add()">
+              <i class="glyphicon glyphicon-plus"></i>
+            </button>
+          </center>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!--Sign In Modal -->
+    <div id="SignInModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Registrati</h4>
+          </div>
+          <form method="POST" id='signinform'>
+            <div class="modal-body">
+              <div class='form-group'>
+                  <label for='Nome'>Nome</label>
+                  <input type="text" id="Nome" name="Nome" class="form-control" maxlength='30' required>
+              </div>
+              <div class='form-group'>
+                  <label for='Cognome'>Cognome</label>
+                  <input type="text" id="Cognome" name="Cognome" class='form-control' maxlength='30' required>
+              </div>
+              <div class='form-group'>
+                  <label for='Telefono'>Telefono</label>
+                  <input type="number" id="Telefono" name="Telefono" class='form-control' max='999999999' required>
+              </div>
+              <div class='form-group'>
+                  <label for="Email">Email</label>
+                  <input type="text" id="Email" name="Email" class='form-control' maxlength='30' required>
+              </div>
+              <div class='form-group'>
+                  <label for='Password'>Password</label>
+                  <input type="password" id="Password" name="Password" class='form-control' maxlength='30' required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div class="btn-group" role="group">
+                <input type="submit" value="Invia" class="btn btn-default btn-hover-green" onclick="Store()">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="LogInModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Accedi</h4>
+          </div>
+          <form method="POST">
+            <div class="modal-body">
+              <div class='form-group'>
+                  <label for="Email">Email</label>
+                  <input type="text" id="Username" name="Email" class='form-control' maxlength='30' required>
+              </div>
+              <div class='form-group'>
+                  <label for='Password'>Password</label>
+                  <input type="password" id="Pwd" name="Password" class='form-control' maxlength='30' required>
+              </div>
+              <div class="login-help">
+                <a data-toggle="modal" data-target="#SignInModal" href="#" onclick="$('#LogInModal').modal('hide')">Non sei registrato?</a>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div class="btn-group" role="group">
+                <input type="reset" value="Invia" class="btn btn-default btn-hover-green" onclick="Check()">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Required Modal -->
+
+    <div id="RequiredModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <h4 class="modal-title">Registati gratuitamente per accedere a questa e ad altre funzionalità</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="footer-col col-md-12">
+              <center>
+                <p>3481 Piazza Roma<br>Monza, MB +398790210</p>
+              </center>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/fork.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/reservation.js"></script>
+    <script type="text/javascript">
+      if (localStorage.getItem("Ristoranti") === null){
+        console.log("Carico Ristoranti");
+        localStorage.setItem("Ristoranti",JSON.stringify(Ristoranti));
+      }
+      if (localStorage.getItem("Utenti") === null){
+        console.log("Carico Utenti");
+        localStorage.setItem("Utenti",JSON.stringify(Utenti));
+      }
+      if (localStorage.getItem("Prenotazioni") === null){
+        console.log("Carico Prenotazioni");
+        localStorage.setItem("Prenotazioni",JSON.stringify(Prenotazioni));
+      }
+      Logged();
+
+      //Aggiungo ristoranti
+      for (var i = 1; i <4 ; i++) {
+          add();
+      }
+
+      function Store() {
+        // Validazione
+        var value=5;
+        var check=0;
+        form = document.getElementById("signinform");
+        for (var i = 0; i < 5; i++) {
+          if (form[i].checkValidity()) {
+            check=check+1;
+          }
+        }
+        console.log(value);
+        console.log(check);
+        if (value == check) {
+          var obj = JSON.parse(localStorage.getItem("Utenti"));
+          var nome = document.getElementById("Nome").value;
+          var cognome = document.getElementById("Cognome").value;
+          var telefono = document.getElementById("Telefono").value;
+          var email = document.getElementById("Email").value;
+          var password = document.getElementById("Password").value;
+          var lock=0;
+          for (var key in obj){
+            if ( email == obj[key].email){
+              lock=1;
+              alert ("Email non disponibile");
+            }
+          }
+          if (lock==0){
+            var data = {nome: "", cognome: "", telefono: "", email: "", password: "", tipo: ""};
+            data["nome"]=nome;
+            data["cognome"]=cognome;
+            data["telefono"]=telefono;
+            data["email"]=email;
+            data["password"]=password;
+            data["tipo"]="utente";
+            console.log(data);
+            obj.push(data);
+            localStorage.setItem('Utenti', JSON.stringify(obj));
+            localStorage.setItem('UserLogged', 'Yes');
+            localStorage.setItem('UserActive', email);
+            location.href = 'user.html';
+          }
+        }
+      }
+
+      function Check() {
+        var Email = document.getElementById('Username').value;
+        var Pwd = document.getElementById('Pwd').value;
+        var Result = JSON.parse(localStorage.getItem("Utenti"));
+        for(i=0;i<Result.length;i++){
+          if (Result[i].email == Email && Result[i].password == Pwd) {
+            if (Result[i].tipo == "amministratore") {
+              localStorage.setItem('AdminLogged', 'Yes');
+              window.location = "ristoranti.html";
+            }
+            if (Result[i].tipo == "utente") {
+              localStorage.setItem('UserLogged', 'Yes');
+              localStorage.setItem('UserActive', Result[i].email)
+              window.location = "user.html";
+            }
+          }
+        }
+      }
+
+      function Logged() {
+        if (localStorage.getItem("AdminLogged")=="Yes") {
+          window.location = "ristoranti.html";
+        }else{
+          if (localStorage.getItem("UserLogged")=="Yes"){
+            window.location = "user.html";
+          }
+        }
+      }
+
+      function add() {
+        var result=JSON.parse(localStorage.getItem("Ristoranti"));
+        var id=(localStorage.getItem("Iterazioni")/1);
+        //Rinizio il ciclo se raggiungo id massimo
+        if (id == (Ristoranti.length)){
+          id = 0;
+          localStorage.setItem("Iterazioni",id+1);
+        }else{
+          localStorage.setItem("Iterazioni",id+1);
+        }
+        elem=document.getElementById("Ristoranti");
+        newPanel=document.createElement('div');
+        newPanel.className="panel panel-default panel-horizontal";
+        newPanel.setAttribute("id","panel-default");
+
+        newPanelHeading=document.createElement('div');
+        newPanelHeading.className="panel-heading";
+        newPanelHeading.setAttribute("id","panel-heading");
+        newPanelHeading.innerHTML= "<img src='img/ristorante"+id+".jpg' class='img-responsive'>";
+
+        newPanelBody=document.createElement('div');
+        newPanelBody.className="panel-body";
+
+        newCol=document.createElement('div');
+        newCol.className="col-md-12";
+
+        newRow=document.createElement('div');
+        newRow.className="row";
+        newRow.innerHTML="<h2>"+Ristoranti[id].nome+"</h2>";
+
+        newCol2=document.createElement('div');
+        newCol2.className="col-md-10";
+
+        newRow1=document.createElement('div');
+        newRow1.className="row";
+        newRow1.innerHTML="<h5>Indirizzo: "+Ristoranti[id].citta+", "+Ristoranti[id].via+"</h5>";
+
+        newRow2=document.createElement('div');
+        newRow2.className="row";
+        newRow2.innerHTML="<h5>Valutazione media: "+Ristoranti[id].review+"</h5>";
+
+        newCol3=document.createElement('div');
+        newCol3.className="col-md-1";
+
+        newRow3=document.createElement('div');
+        newRow3.className="row";
+
+        newButton=document.createElement('button');
+        newButton.className="btn btn-primary btn-lg";
+        newButton.setAttribute("style","width: 100px;");
+        newButton.setAttribute("data-id",id);
+        newButton.setAttribute("data-toggle","modal");
+        newButton.setAttribute("data-target","#RequiredModal");
+        newButton.setAttribute("href","#");
+        newButton.innerHTML="Prenota";
+
+        newRow4=document.createElement('div');
+        newRow4.className="row";
+        newRow4.setAttribute("style","margin-top: 10px;")
+
+        newButton2=document.createElement('button');
+        newButton2.className="btn btn-primary btn-lg";
+        newButton2.setAttribute("style","width: 100px;");
+        newButton2.setAttribute("data-id",id);
+        newButton2.setAttribute("data-toggle","modal");
+        newButton2.setAttribute("data-target","#RequiredModal");
+        newButton2.setAttribute("href","#");
+        newButton2.innerHTML="Menù";
+
+        elem.appendChild(newPanel);
+        newPanel.appendChild(newPanelHeading);
+        newPanel.appendChild(newPanelBody);
+        newPanelBody.appendChild(newCol);
+        newCol.appendChild(newRow);
+        newPanelBody.appendChild(newCol2);
+        newCol2.appendChild(newRow1);
+        newCol2.appendChild(newRow2);
+
+        newPanelBody.appendChild(newCol3);
+        newCol3.appendChild(newRow3);
+        newRow3.appendChild(newButton);
+        newCol3.appendChild(newRow4);
+        newRow4.appendChild(newButton2);
+      }
+    </script>
+    <!-- JS -->
+  </body>
+</html>

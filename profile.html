@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+	<head>
+  	<title>La Forchetta</title>
+  	<!-- META -->
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<!-- META -->
+  	<!-- CSS -->
+  	<link href="css/bootstrap.css" rel="stylesheet" media="screen">
+  	<!-- Optional Bootstrap theme -->
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+  	<!-- CSS -->  
+	</head>
+	<body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" style="margin-left:-15px !important;" href='user.html'>LA FORCHETTA</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="profile.html">Profilo</a></li>
+          <li><a href="prenotazioni_user.html">Prenotazioni</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a class="dropdown-toggle" style="margin-right:-15px !important;" data-toggle="dropdown" href="#">
+              <i class="glyphicon glyphicon-off"></i>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="nav-item">
+                <a class="nav-link" onclick="logout()" href="#">Esci</a>
+                <a class="nav-link" onclick="deleteAccount()" href="#">Elimina account</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    
+    <!-- Header -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <form id="profile-form">
+                <div class="form-group">
+                  <label for="Nome">Nome</label>
+                  <input type="text" id="Nome" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="Cognome">Cognome</label>  
+                  <input type="text" id="Cognome" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label for="Telefono">Telefono</label>
+                  <input type="number" id="Telefono" class="form-control" required>
+                </div>
+                <div class="form-group">  
+                  <label for="Email">Email</label>
+                  <input type="text" id="Email" class="form-control" disabled required>
+                </div>
+                <div class="form-group">  
+                  <label for="Password">Password</label>
+                  <input type="password" id="Password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-success" onclick="update()">Salva</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="footer-col col-md-12">
+              <center>
+                <p>3481 Piazza Roma<br>Monza, MB +398790210</p>
+              </center>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/fork.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/reservation.js"></script>
+    <script type="text/javascript">
+      
+      checklog();
+      setValue();
+
+      if (localStorage.getItem("Ristoranti") === null){
+        console.log("Carico Ristoranti");
+        localStorage.setItem("Ristoranti",JSON.stringify(Ristoranti));
+      }
+      if (localStorage.getItem("Utenti") === null){
+        console.log("Carico Utenti");
+        localStorage.setItem("Utenti",JSON.stringify(Utenti));
+      }
+      if (localStorage.getItem("Prenotazioni") === null){
+        console.log("Carico Prenotazioni");
+        localStorage.setItem("Prenotazioni",JSON.stringify(Prenotazioni));
+      }
+
+      function logout() {
+        localStorage.setItem('UserLogged', 'No');
+        localStorage.removeItem("UserActive");
+        window.location = "index.html";
+      }
+      function checklog() {
+        if (localStorage.getItem("UserLogged")== null) {
+          window.location = "index.html";
+          addRestaurant(key);
+        }
+      }
+
+      function deleteAccount(){
+        Utente = localStorage.getItem("UserActive");
+        Utenti = JSON.parse(localStorage.getItem("Utenti"));
+        console.log(Utenti);
+        for (var key in Utenti){
+          if (Utente == Utenti[key].email){
+            Utenti.splice(key,1);
+          }
+        }
+        localStorage.setItem('Utenti', JSON.stringify(Utenti));
+        logout();
+      }
+
+      function setValue() {
+        Utenti = JSON.parse(localStorage.getItem("Utenti"));
+        Utente = localStorage.getItem("UserActive");
+        for (var key in Utenti){
+          if (Utenti[key].email == Utente ){
+            document.getElementById("Nome").value = Utenti[key].nome;
+            document.getElementById("Cognome").value = Utenti[key].cognome;
+            document.getElementById("Telefono").value = Utenti[key].telefono;
+            document.getElementById("Email").value = Utenti[key].email;
+            document.getElementById("Password").value = Utenti[key].password;
+          }
+        }
+      }
+
+      function update() {
+        // Validazione
+        var value=5;
+        var check=0;
+        form = document.getElementById("profile-form");
+        for (var i = 0; i < 5; i++) {
+          if (form[i].checkValidity()) {
+            check=check+1;
+          }
+        }
+
+        if (value == check){
+          Utenti = JSON.parse(localStorage.getItem("Utenti"));
+          Utente = localStorage.getItem("UserActive");
+          for (var key in Utenti){
+            if (Utenti[key].email == Utente ){
+              Utenti[key].nome=document.getElementById("Nome").value;
+              Utenti[key].cognome=document.getElementById("Cognome").value;
+              Utenti[key].telefono=document.getElementById("Telefono").value;
+              Utenti[key].email=document.getElementById("Email").value;
+              Utenti[key].password=document.getElementById("Password").value;
+            }
+          }
+          localStorage.setItem("Utenti", JSON.stringify(Utenti));
+        }
+      }
+
+    </script>
+    <!-- JS -->
+  </body>
+</html>

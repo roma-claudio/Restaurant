@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+  	<title>La Forchetta</title>
+  	<!-- META -->
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<!-- META -->
+  	<!-- CSS -->
+  	<link href="css/bootstrap.css" rel="stylesheet" media="screen">
+  	<!-- Optional Bootstrap theme -->
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+  	<!-- CSS -->  
+	</head>
+
+  <!-- Navbar --> 
+
+  <body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" style="margin-left:-15px !important;" href='user.html'>LA FORCHETTA</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="profile.html">Profilo</a></li>
+          <li><a href="prenotazioni_user.html">Prenotazioni</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a class="dropdown-toggle" style="margin-right:-15px !important;" data-toggle="dropdown" href="#">
+              <i class="glyphicon glyphicon-off"></i>
+            </a>
+            <ul class="dropdown-menu">
+              <li class="nav-item">
+                <a class="nav-link" onclick="logout()" href="#">Esci</a>
+                <a class="nav-link" onclick="deleteAccount()" href="#">Elimina account</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+  <!-- Header -->
+    <div class="container-fluid">
+      <div class="row text-center">
+        <div class="col-sm-6 col-sm-offset-3">
+          <br><br> <h2 style="color:#0fad00">Prenotazione effettuata con successo</h2>
+          <p style="font-size:20px;color:#5C5C5C;">Grazie per aver prenotato su LaForchetta.com .Ti abbiamo mandato una email al tuo indirizzo di registrazione con tutti i dettagli</p>
+          <br><br>
+        </div>  
+      </div>
+    </div>
+
+  <!-- Footer -->
+    <footer>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="footer-col col-md-12">
+              <center>
+                <p>3481 Piazza Roma<br>Monza, MB +398790210</p>
+              </center>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/fork.js"></script>
+    <script type="text/javascript">
+      if (localStorage.getItem("Ristoranti" == null)){
+        console.log("Carico Ristoranti")
+        localStorage.setItem("Ristoranti",JSON.stringify(Ristoranti));
+      }
+      if (localStorage.getItem("Utenti") === null){
+        console.log("Carico Utenti")
+        localStorage.setItem("Utenti",JSON.stringify(Utenti));
+      }
+      checklog();
+      function checklog() {
+        if (localStorage.getItem("AdminLogged")=="No") {
+          window.location = "index.html";
+        }
+      }
+       function logout() {
+        localStorage.setItem('UserLogged', 'No');
+        localStorage.removeItem("UserActive");
+        window.location = "index.html";
+      }
+      function deleteAccount(){
+        Utente = localStorage.getItem("UserActive");
+        Utenti = JSON.parse(localStorage.getItem("Utenti"));
+        console.log(Utenti);
+        for (var key in Utenti){
+          if (Utente == Utenti[key].email){
+            Utenti.splice(key,1);
+          }
+        }
+        localStorage.setItem('Utenti', JSON.stringify(Utenti));
+        logout();
+      }
+
+    </script>
+  </body>
+</html>
